@@ -75,24 +75,13 @@ def run_get(
     instruction: str = Query(
         default=DEFAULT_INSTRUCTION,
         description="Natural language instruction for the agent, passed as a query param.",
-        examples=[DEFAULT_INSTRUCTION],
-    )
+        )
 ):
-    """GET version - trigger the agent straight from a browser URL bar or a
-    one-line curl, no JSON body needed. Handy for quick manual debugging:
-
-        http://localhost:8000/run?instruction=Create a sample employee CSV...
-
-    Does the exact same work as POST /run - same function underneath.
-    """
-    return _execute(instruction)
+       return _execute(instruction)
 
 
 @app.post("/run", response_model=RunResponse)
-def run_post(req: RunRequest):
-    """POST version - same as GET /run but takes a JSON body. Use this from
-    the FastAPI docs UI (/docs) or from another service calling the API
-    programmatically."""
+def run_post(req: RunRequest):    
     return _execute(req.instruction)
 
 
