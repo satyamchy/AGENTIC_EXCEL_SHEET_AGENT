@@ -1,6 +1,3 @@
-"""
-Tool: import CSV data into an existing Google Sheet.
-"""
 import csv
 import re
 from pathlib import Path

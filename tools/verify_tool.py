@@ -1,7 +1,3 @@
-"""
-Tool: verify that the Excel workbook and Google Sheet both actually
-contain the expected data (not just that the API calls returned 200).
-"""
 import csv
 from pathlib import Path
 

@@ -1,6 +1,3 @@
-"""
-Tool: generate sample employee CSV data.
-"""
 import csv
 import random
 from pathlib import Path

@@ -1,22 +1,3 @@
-"""
-Tool: open Microsoft Excel, import the CSV, and save the workbook.
-
-Real Excel automation (launching the actual Excel.exe application and
-driving it) is only possible via COM on Windows, which is what the
-assignment literally asks for ("Open Microsoft Excel installed on your
-computer"). To keep the agent runnable on any grader's machine (Mac/Linux
-CI, no Excel license, etc.) we detect the environment:
-
-  1. Windows + pywin32 + Excel installed  -> real COM automation:
-     launches Excel.Application, opens/imports the CSV, saves as .xlsx.
-  2. Anything else -> openpyxl fallback: produces an identical .xlsx
-     workbook without requiring the Excel binary, and clearly reports
-     which mode ran so the user/grader isn't misled.
-
-This dual-path design is itself part of the "robust integration" bonus
-criteria - the agent adapts its plan to the environment instead of
-crashing when Excel isn't installed.
-"""
 import csv
 import platform
 from pathlib import Path

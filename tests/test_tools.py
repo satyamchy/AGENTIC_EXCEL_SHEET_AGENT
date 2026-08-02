@@ -1,7 +1,3 @@
-"""
-Unit tests. Excel COM and Google Sheets API calls are mocked/skipped so
-these run anywhere (no Excel license or Google credentials required).
-"""
 import csv
 import sys
 from pathlib import Path

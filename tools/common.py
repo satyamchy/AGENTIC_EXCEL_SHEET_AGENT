@@ -1,8 +1,3 @@
-"""
-Shared utilities: structured logging + retry-with-backoff decorator.
-Every tool uses @retry so transient failures can recover instead of
-crashing the whole agent run.
-"""
 import functools
 import logging
 import sys

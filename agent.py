@@ -1,26 +1,3 @@
-"""
-Autonomous agent entrypoint.
-
-Architecture
-------------
-This is a ReAct-style LangGraph agent, not a hardcoded script:
-
-    START -> [planner/agent node] <-> [tool node] -> END
-
-The LLM (Claude by default, OpenAI optional) is bound to four tools:
-    generate_employee_csv, import_csv_to_excel,
-    import_csv_to_google_sheets, verify_imports
-
-Given a single natural-language instruction, the model decides *itself*
-which tools to call, in what order, and with what arguments - including
-threading the csv_path/xlsx_path/spreadsheet_id returned by one tool call
-into the next one. The graph loops between the agent node and the tool
-node until the model responds with no further tool calls, at which point
-it produces a final natural-language completion report.
-
-Run:
-    python agent.py "Create a sample employee CSV and import it into Excel and Google Sheets."
-"""
 import sys
 import json
 
