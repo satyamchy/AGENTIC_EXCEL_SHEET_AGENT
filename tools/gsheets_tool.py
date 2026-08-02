@@ -5,6 +5,7 @@ using the Google Sheets API (via gspread + a service account).
 import csv
 from pathlib import Path
 
+import gspread
 from langchain_core.tools import tool
 
 from config import GOOGLE_SERVICE_ACCOUNT_FILE, GOOGLE_SHARE_WITH_EMAIL
@@ -61,17 +62,26 @@ def import_csv_to_google_sheets(csv_path: str, sheet_title: str = "Employee Data
     except Exception as exc:  # noqa: BLE001
         return {"success": False, "error": f"Google auth failed: {exc}"}
 
-    progress("Authenticated with Google Sheets API")
-    progress(f"Creating Google Sheet '{sheet_title}'...")
-    spreadsheet = client.create(sheet_title)
-    worksheet = spreadsheet.sheet1
+    try:
+        progress("Authenticated with Google Sheets API")
+        progress(f"Creating Google Sheet '{sheet_title}'...")
+        spreadsheet = client.create(sheet_title)
+        worksheet = spreadsheet.sheet1
 
-    progress(f"Uploading {len(rows) - 1} data rows to Google Sheets...")
-    worksheet.update(range_name="A1", values=rows)
+        progress(f"Uploading {len(rows) - 1} data rows to Google Sheets...")
+        worksheet.update(range_name="A1", values=rows)
 
-    if GOOGLE_SHARE_WITH_EMAIL:
-        spreadsheet.share(GOOGLE_SHARE_WITH_EMAIL, perm_type="user", role="writer")
-        progress(f"Shared sheet with {GOOGLE_SHARE_WITH_EMAIL}")
+        if GOOGLE_SHARE_WITH_EMAIL:
+            spreadsheet.share(GOOGLE_SHARE_WITH_EMAIL, perm_type="user", role="writer")
+            progress(f"Shared sheet with {GOOGLE_SHARE_WITH_EMAIL}")
+    except gspread.exceptions.APIError as exc:
+        message = str(exc)
+        retryable = not ("403" in message and "quota" in message.lower())
+        return {
+            "success": False,
+            "error": f"Google Sheets API failed: {message}",
+            "retryable": retryable,
+        }
 
     url = spreadsheet.url or f"https://docs.google.com/spreadsheets/d/{spreadsheet.id}/edit"
     progress(f"Google Sheet ready: {url}")

@@ -76,5 +76,5 @@ def verify_imports(csv_path: str, xlsx_path: str = "", spreadsheet_id: str = "")
         if k in report
     )
     report["success"] = overall
-    progress(f"Verification complete — overall success: {overall}")
+    progress(f"Verification complete - overall success: {overall}")
     return report

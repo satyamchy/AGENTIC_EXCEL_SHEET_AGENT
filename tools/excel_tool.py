@@ -14,7 +14,7 @@ CI, no Excel license, etc.) we detect the environment:
      which mode ran so the user/grader isn't misled.
 
 This dual-path design is itself part of the "robust integration" bonus
-criteria — the agent adapts its plan to the environment instead of
+criteria - the agent adapts its plan to the environment instead of
 crashing when Excel isn't installed.
 """
 import csv
@@ -61,7 +61,7 @@ def _import_via_com(csv_path: Path, xlsx_path: Path) -> dict:
 def _import_via_openpyxl(csv_path: Path, xlsx_path: Path) -> dict:
     from openpyxl import Workbook
 
-    progress("Excel COM automation unavailable on this OS — using openpyxl fallback "
+    progress("Excel COM automation unavailable on this OS - using openpyxl fallback "
               "to produce an equivalent .xlsx workbook.")
     wb = Workbook()
     ws = wb.active

@@ -12,7 +12,7 @@ The LLM (Claude by default, OpenAI optional) is bound to four tools:
     import_csv_to_google_sheets, verify_imports
 
 Given a single natural-language instruction, the model decides *itself*
-which tools to call, in what order, and with what arguments — including
+which tools to call, in what order, and with what arguments - including
 threading the csv_path/xlsx_path/spreadsheet_id returned by one tool call
 into the next one. The graph loops between the agent node and the tool
 node until the model responds with no further tool calls, at which point
@@ -57,7 +57,7 @@ Google Sheets, plan the full sequence yourself before acting:
 
 Only run the destinations the user actually asked for (e.g. skip Google Sheets
 entirely if they only asked for Excel). If a tool reports success=False, do not
-silently continue as if it worked — mention the failure in your final summary,
+silently continue as if it worked - mention the failure in your final summary,
 and skip verifying that specific target.
 
 When you are done, give the user a concise final report: what was generated,
