@@ -74,5 +74,18 @@ def test_verify_imports_matches_row_counts(tmp_path, monkeypatch):
     assert report["excel"]["rows_found"] == 20
 
 
+def test_verify_imports_rejects_placeholder_spreadsheet_id(tmp_path):
+    csv_path = tmp_path / "employees.csv"
+    generate_employee_csv.invoke({"num_rows": 20, "output_path": str(csv_path)})
+
+    report = verify_imports.invoke(
+        {"csv_path": str(csv_path), "spreadsheet_id": "your_spreadsheet_id"}
+    )
+
+    assert report["success"] is False
+    assert report["google_sheets"]["verified"] is False
+    assert "placeholder" in report["google_sheets"]["error"].lower()
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-v"]))

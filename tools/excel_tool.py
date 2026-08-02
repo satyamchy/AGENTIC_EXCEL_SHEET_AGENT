@@ -24,6 +24,7 @@ from pathlib import Path
 from langchain_core.tools import tool
 
 from config import DEFAULT_XLSX_PATH
+
 from tools.common import get_logger, progress, retry
 
 log = get_logger(__name__)
@@ -100,11 +101,11 @@ def import_csv_to_excel(csv_path: str, xlsx_path: str = "") -> dict:
     Returns:
         dict with success flag, xlsx_path, method used, and rows_imported.
     """
-    src = Path(csv_path)
+    src = Path(csv_path).expanduser().resolve()
     if not src.exists():
         return {"success": False, "error": f"CSV not found at {csv_path}"}
 
-    dest = Path(xlsx_path) if xlsx_path else DEFAULT_XLSX_PATH
+    dest = (Path(xlsx_path) if xlsx_path else DEFAULT_XLSX_PATH).expanduser().resolve()
     dest.parent.mkdir(parents=True, exist_ok=True)
 
     with open(src, newline="", encoding="utf-8") as f:

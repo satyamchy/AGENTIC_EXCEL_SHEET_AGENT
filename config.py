@@ -1,8 +1,3 @@
-"""
-Central configuration for the agent.
-All environment-dependent values live here so tools/agent.py never
-hardcode paths, keys, or model names.
-"""
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -33,8 +28,8 @@ def require_groq_api_key() -> str:
 GOOGLE_SERVICE_ACCOUNT_FILE = os.getenv(
     "GOOGLE_SERVICE_ACCOUNT_FILE", str(BASE_DIR / "service_account.json")
 )
-
-GOOGLE_SHARE_WITH_EMAIL = os.getenv("GOOGLE_SHARE_WITH_EMAIL") 
+GOOGLE_SPREADSHEET_ID = os.getenv("GOOGLE_SPREADSHEET_ID")
+GOOGLE_SPREADSHEET_URL = os.getenv("GOOGLE_SPREADSHEET_URL")
 
 # --- Behavior knobs --------------------------------------------------
 MAX_TOOL_RETRIES = int(os.getenv("MAX_TOOL_RETRIES", "2"))
@@ -46,3 +41,4 @@ LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 # --- File paths ----------------------------------------------------------
 DEFAULT_CSV_PATH = DATA_DIR / "employees.csv"
 DEFAULT_XLSX_PATH = DATA_DIR / "employees.xlsx"
+GOOGLE_SHEET_LINK_PATH = DATA_DIR / "google_sheet_link.txt"

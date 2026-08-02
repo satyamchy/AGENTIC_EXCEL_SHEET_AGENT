@@ -10,7 +10,5 @@ pytest>=8.0.0
 fastapi>=0.115.0
 uvicorn[standard]>=0.30.0
 
-# Windows-only: enables real Excel COM automation.
-# On Mac/Linux this simply won't install/import, and excel_tool.py
-# automatically falls back to the openpyxl path.
+# Windows-only
 pywin32>=306; sys_platform == 'win32'

@@ -7,9 +7,16 @@ from pathlib import Path
 
 from langchain_core.tools import tool
 
+from config import GOOGLE_SHEET_LINK_PATH
 from tools.common import get_logger, progress, retry
 
 log = get_logger(__name__)
+
+PLACEHOLDER_SPREADSHEET_IDS = {
+    "your_spreadsheet_id",
+    "{spreadsheet.id}",
+    "spreadsheet_id",
+}
 
 
 @tool
@@ -30,7 +37,7 @@ def verify_imports(csv_path: str, xlsx_path: str = "", spreadsheet_id: str = "")
     Returns:
         dict with success flag and a per-target verification report.
     """
-    src = Path(csv_path)
+    src = Path(csv_path).expanduser().resolve()
     if not src.exists():
         return {"success": False, "error": f"CSV not found at {csv_path}"}
 
@@ -43,18 +50,28 @@ def verify_imports(csv_path: str, xlsx_path: str = "", spreadsheet_id: str = "")
         progress("Verifying Excel workbook contents...")
         try:
             from openpyxl import load_workbook
-            wb = load_workbook(xlsx_path, read_only=True)
+            workbook_path = Path(xlsx_path).expanduser().resolve()
+            wb = load_workbook(workbook_path, read_only=True)
             ws = wb.active
             actual = sum(1 for _ in ws.iter_rows(min_row=2)) if ws.max_row else 0
             report["excel"] = {
                 "verified": actual == expected_rows,
                 "rows_found": actual,
-                "path": xlsx_path,
+                "path": str(workbook_path),
             }
         except Exception as exc:  # noqa: BLE001
             report["excel"] = {"verified": False, "error": str(exc)}
 
     if spreadsheet_id:
+        if spreadsheet_id.strip().lower() in PLACEHOLDER_SPREADSHEET_IDS:
+            report["google_sheets"] = {
+                "verified": False,
+                "error": f"Invalid placeholder spreadsheet_id received: {spreadsheet_id}",
+            }
+            report["success"] = False
+            progress("Verification skipped for Google Sheets because spreadsheet_id was a placeholder")
+            return report
+
         progress("Verifying Google Sheet contents...")
         try:
             from tools.gsheets_tool import _get_client
@@ -62,11 +79,17 @@ def verify_imports(csv_path: str, xlsx_path: str = "", spreadsheet_id: str = "")
             sh = client.open_by_key(spreadsheet_id)
             values = sh.sheet1.get_all_values()
             actual = max(len(values) - 1, 0)
+            url = sh.url or f"https://docs.google.com/spreadsheets/d/{spreadsheet_id}/edit"
             report["google_sheets"] = {
                 "verified": actual == expected_rows,
                 "rows_found": actual,
-                "url": sh.url or f"https://docs.google.com/spreadsheets/d/{spreadsheet_id}/edit",
+                "url": url,
             }
+            progress(f"Verified Google Sheet URL: {url}")
+            log.info("Verified Google Sheet URL: %s", url)
+            GOOGLE_SHEET_LINK_PATH.parent.mkdir(parents=True, exist_ok=True)
+            GOOGLE_SHEET_LINK_PATH.write_text(url + "\n", encoding="utf-8")
+            progress(f"Saved verified Google Sheet link to {GOOGLE_SHEET_LINK_PATH}")
         except Exception as exc:  # noqa: BLE001
             report["google_sheets"] = {"verified": False, "error": str(exc)}
 
